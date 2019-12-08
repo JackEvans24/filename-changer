@@ -35,7 +35,7 @@ namespace FilenameChanger
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(directory) || string.IsNullOrWhiteSpace(pattern))
+            if (string.IsNullOrWhiteSpace(pattern))
             {
                 Console.WriteLine("Directory or pattern not included");
                 return;
@@ -50,6 +50,23 @@ namespace FilenameChanger
                 var fileObj = new FileInfo(file);
                 var filename = fileObj.Name;
                 Console.WriteLine("{0} => {1}", filename, filename.Replace(pattern, string.Empty));
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Confirm change: [Y] Yes, [N] No");
+            var confirm = Console.ReadLine().ToLower() == "y";
+
+            if (confirm)
+            {
+                foreach (var file in files)
+                {
+                    var fileObj = new FileInfo(file);
+                    if (!fileObj.Name.Contains(pattern))
+                        continue;
+
+                    File.Move(fileObj.FullName, $"{fileObj.DirectoryName}/{fileObj.Name.Replace(pattern, string.Empty).Trim()}");
+                    File.Delete(fileObj.FullName);
+                }
             }
         }
     }
